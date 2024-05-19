@@ -77,7 +77,27 @@ if selected == "Detalles":
   st.subheader("Contacto")
   st.text("+55 11 97783-6489")
   st.text("canchaspadel@mail.com")
- 
+
+if selected == "Canchas":
+  st.subheader("Cancha 1")
+  st.image("assets/img/canchacerrada00.jpg")
+  st.text("Condiciones: Cerrada, Cristal.")
+  st.text("Costo: $1250 (Lunes a Jueves), $1500 (Viernes a Domingo)")
+  st.write("##")
+  
+  st.subheader("Cancha 2")
+  st.image("assets/img/canchaabierta01.jpg")
+  st.text("Condiciones: Abierta, Cristal.")
+  st.text("Costo: $1000 (Lunes a Jueves), $1250 (Viernes a Domingo)")
+  st.write("##")
+  
+  st.subheader("Cancha 3")
+  st.image("assets/img/canchaabiertamuro01.jpg")
+  st.text("Condiciones: Abierta, Muro.")
+  st.text("Costo: $800 (Lunes a Jueves), $1000 (Viernes a Domingo)")
+  st.write("##")
+  
+
 if selected == "Reservar":
   # Inicializacion variables de estado en st.session_state
   if 'step' not in st.session_state:
