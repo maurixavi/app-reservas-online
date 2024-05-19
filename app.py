@@ -37,7 +37,7 @@ def is_valid_email(email):
     return re.match(regex, email) is not None
 
 def fecha_para_visualizacion(fecha):
-    return fecha.strftime("%A, %B %d")
+    return fecha.strftime("%A, %B %d").title()
 
 def get_horarios_disponibles(fecha):
     horarios = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00"]
@@ -56,6 +56,32 @@ def get_canchas_disponibles(fecha_str, horario):
     canchas_ocupadas = [reserva["cancha"] for reserva in reservas]
     canchas_disponibles = [cancha for cancha in canchas if cancha not in canchas_ocupadas]
     return canchas_disponibles
+
+def obtener_condiciones_y_costo(cancha, fecha):
+    condiciones = ""
+    costo = ""
+    dia_semana = fecha.strftime("%A").title()
+    
+    if cancha == "Cancha 1":
+        condiciones = "Cerrada, Cristal"
+        if dia_semana in ["Lunes", "Martes", "Miercoles", "Jueves"]:
+            costo = "€12.50"
+        else:
+            costo = "€15.00"
+    elif cancha == "Cancha 2":
+        condiciones = "Abierta, Cristal"
+        if dia_semana in ["Monday", "Tuesday", "Wednesday", "Thursday"]:
+            costo = "€10.00"
+        else:
+            costo = "€12.50"
+    elif cancha == "Cancha 3":
+        condiciones = "Abierta, Muro"
+        if dia_semana in ["Monday", "Tuesday", "Wednesday", "Thursday"]:
+            costo = "€8.00"
+        else:
+            costo = "€10.00"
+    
+    return condiciones, costo
 
 canchas_imagenes = {
     "Cancha 1": "assets/img/canchacerrada00.jpg",
@@ -197,15 +223,9 @@ if selected == "Reservar":
           if st.session_state.cancha in canchas_imagenes:
             st.image(canchas_imagenes[st.session_state.cancha])
 
-            if st.session_state.cancha == "Cancha 1":
-                st.write("Condiciones: Cerrada, Cristal.")
-                st.write("Costo: €12.50 (Lunes a Jueves), €15.00 (Viernes a Domingo)")
-            elif st.session_state.cancha == "Cancha 2":
-                st.write("Condiciones: Abierta, Cristal.")
-                st.write("Costo: €10.00 (Lunes a Jueves), €12.50 (Viernes a Domingo)")
-            elif st.session_state.cancha == "Cancha 3":
-                st.write("Condiciones: Abierta, Muro.")
-                st.write("Costo: €8.00 (Lunes a Jueves), €10.00 (Viernes a Domingo)")
+            condiciones, costo = obtener_condiciones_y_costo(st.session_state.cancha, st.session_state.fecha)
+            st.write(f"Condiciones: {condiciones}")
+            st.write(f"Costo: {costo}")
           
           
           confirmar_button = st.button("Confirmar Reserva")
@@ -253,8 +273,10 @@ if selected == "Reservar":
       with col_data:
         st.write(st.session_state.nombre)
         st.write(st.session_state.email)
-        st.write(fecha_para_visualizacion(st.session_state.fecha).title() + f" - {st.session_state.horario}")
-        st.write(st.session_state.cancha)
+        st.write(fecha_para_visualizacion(st.session_state.fecha) + f" - {st.session_state.horario}")
+        cancha_seleccionada = st.session_state.cancha
+        condiciones, _ = obtener_condiciones_y_costo(cancha_seleccionada, st.session_state.fecha)
+        st.write(f"{cancha_seleccionada} ({condiciones})")
     
       st.write("---")
       
