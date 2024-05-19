@@ -194,11 +194,9 @@ if selected == "Reservar":
       if canchas_disponibles:
           st.session_state.cancha = st.selectbox("Seleccione una cancha disponible.", canchas_disponibles, index=canchas_disponibles.index(st.session_state.cancha) if st.session_state.cancha in canchas_disponibles else 0)
           
-          # Mostrar la imagen de la cancha seleccionada
           if st.session_state.cancha in canchas_imagenes:
             st.image(canchas_imagenes[st.session_state.cancha])
 
-            # Mostrar información de la cancha
             if st.session_state.cancha == "Cancha 1":
                 st.write("Condiciones: Cerrada, Cristal.")
                 st.write("Costo: €12.50 (Lunes a Jueves), €15.00 (Viernes a Domingo)")
@@ -245,10 +243,8 @@ if selected == "Reservar":
       st.success("Reserva confirmada exitosamente! Revisa tu casilla de mail.")
       st.write("#### Detalles de la reserva")
 
-      # Crear columnas para los atributos y los datos
       col_attr, col_data = st.columns(2)
     
-      # Mostrar los detalles en columnas
       with col_attr:
         st.write("**Nombre**")
         st.write("**Email**")
@@ -260,7 +256,6 @@ if selected == "Reservar":
         st.write(fecha_para_visualizacion(st.session_state.fecha).title() + f" - {st.session_state.horario}")
         st.write(st.session_state.cancha)
     
-      # Agregar una línea debajo del último dato
       st.write("---")
       
       st.warning("IMPORTANTE: Recuerda que al confirmar la reserva, estás comprometiéndote a asistir. Se aceptaran cancelaciones exclusivamente con un día de anticipación vía comunicación al número +55 97783-6489. En caso de no asistir ni realizar cancelación no se aceptaran nuevas reservas para dichos datos de usuario (email y telefono).")
