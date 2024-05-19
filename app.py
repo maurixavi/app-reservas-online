@@ -49,6 +49,94 @@ def get_horarios_disponibles(fecha):
             horarios_disponibles.append(horario)
     return horarios_disponibles
 
+def get_horarios_disponibles(fecha):
+    horarios = [
+        "08:30", "10:00", "11:30", "13:00",
+        "14:30", "16:00", "17:30", "19:00",
+        "20:30", "22:00"
+    ]
+    horarios_sabado = [
+        "08:30", "10:00", "11:30", "13:00",
+        "14:30", "16:00", "17:30", "19:00",
+        "20:30", "22:00"
+    ]
+    horarios_domingo = [
+        "14:30", "16:00", "17:30", "19:00",
+        "20:30", "22:00"
+    ]
+    
+    dia_semana = fecha.strftime("%A")
+    fecha_str = fecha_to_string(fecha)
+    horarios_disponibles = []
+    if dia_semana == "sábado":
+        for horario in horarios_sabado:
+            canchas_disponibles = get_canchas_disponibles(fecha_str, horario)
+            if canchas_disponibles:
+                horarios_disponibles.append(horario)
+    elif dia_semana == "domingo":
+        for horario in horarios_domingo:
+            canchas_disponibles = get_canchas_disponibles(fecha_str, horario)
+            if canchas_disponibles:
+                horarios_disponibles.append(horario)
+    else:
+        for horario in horarios:
+            canchas_disponibles = get_canchas_disponibles(fecha_str, horario)
+            if canchas_disponibles:
+                horarios_disponibles.append(horario)
+    return horarios_disponibles
+
+def get_horarios_disponibles_(fecha):
+    horarios = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00"]
+    fecha_str = fecha_to_string(fecha)
+    horarios_disponibles = []
+    for horario in horarios:
+        canchas_disponibles = get_canchas_disponibles(fecha_str, horario)
+        if canchas_disponibles:
+            horarios_disponibles.append(horario)
+    return horarios_disponibles
+
+def get_horarios_disponibles2(fecha):
+    dia_semana = fecha.strftime("%A")
+    
+    horarios_dia_semana = [
+        "08:30", "10:00", "11:30", "13:00",
+        "14:30", "16:00", "17:30", "19:00",
+        "20:30", "22:00"
+    ]
+    horarios_sabado = [
+        "08:30", "10:00", "11:30", "13:00",
+        "14:30", "16:00", "17:30", "19:00",
+        "20:30", "22:00"
+    ]
+    horarios_domingo = [
+        "14:30", "16:00", "17:30", "19:00",
+        "20:30", "22:00"
+    ]
+    
+    horarios_por_dia = {
+        "lunes": horarios_dia_semana,
+        "martes": horarios_dia_semana,
+        "miercoles": horarios_dia_semana,
+        "jueves": horarios_dia_semana,
+        "viernes": horarios_dia_semana,
+        "sabado": horarios_sabado,
+        "domingo": horarios_domingo
+    }
+
+    # Obtén los horarios disponibles para el día correspondiente
+    horarios_disponibles = horarios_por_dia.get(dia_semana, [])
+
+    fecha_str = fecha_to_string(fecha)
+    horarios_disponibles2 = []
+    for horario in horarios_disponibles:
+        canchas_disponibles = get_canchas_disponibles(fecha_str, horario)
+        if canchas_disponibles:
+            horarios_disponibles2.append(horario)
+
+    return horarios_disponibles2
+
+
+
 # Canchas disponibles basadas en la fecha y el horario seleccionado
 def get_canchas_disponibles(fecha_str, horario):
     canchas = ["Cancha 1", "Cancha 2", "Cancha 3"]
@@ -186,6 +274,8 @@ if selected == "Reservar":
       st.write(f"Nombre: {st.session_state.nombre}")
       st.write(f"Email: {st.session_state.email}")
       st.write(f"Fecha seleccionada: {fecha_para_visualizacion(st.session_state.fecha)}")
+      current_time = datetime.datetime.now().strftime("%H:%M:%S")
+      st.text(f"Tiempo actual: {current_time}")
 
       horarios_disponibles = get_horarios_disponibles(st.session_state.fecha)
       if horarios_disponibles:
@@ -240,12 +330,13 @@ if selected == "Reservar":
                   "cancha": st.session_state.cancha
               }
               reservas_collection.insert_one(nueva_reserva)
+              condiciones, costo = obtener_condiciones_y_costo(st.session_state.cancha, st.session_state.fecha)
               send(
                    st.session_state.email, 
                   st.session_state.nombre, 
                    fecha_to_string(st.session_state.fecha), 
                    st.session_state.horario, 
-                  st.session_state.cancha)
+                  st.session_state.cancha, condiciones, costo)
               st.session_state.reserva_confirmada = True
               st.session_state.step = 4  
               st.experimental_rerun()
@@ -275,7 +366,7 @@ if selected == "Reservar":
       with col_data:
         st.write(st.session_state.nombre)
         st.write(st.session_state.email)
-        st.write(fecha_para_visualizacion(st.session_state.fecha) + f" - {st.session_state.horario}")
+        st.write(fecha_para_visualizacion(st.session_state.fecha) + f". Hora: {st.session_state.horario}")
         cancha_seleccionada = st.session_state.cancha
         condiciones, costo = obtener_condiciones_y_costo(cancha_seleccionada, st.session_state.fecha)
         st.write(f"{cancha_seleccionada} ({condiciones})")
