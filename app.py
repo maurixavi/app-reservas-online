@@ -5,6 +5,7 @@ from reservas import guardar_reserva
 import datetime
 import locale
 import pymongo
+import re
 
 st.set_page_config(
   page_title="Padel Club - Reserva tu cancha online", 
@@ -30,6 +31,10 @@ def init_connection():
 client = init_connection()
 db = client.padelclub
 reservas_collection = db.reservas
+
+def is_valid_email(email):
+    regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    return re.match(regex, email) is not None
 
 def fecha_para_visualizacion(fecha):
     return fecha.strftime("%A, %B %d")
@@ -67,41 +72,48 @@ selected = option_menu(
 # ---- MENU ----
 if selected == "Detalles":
   google_maps_embed = """
-  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12131.716864602487!2d-3.6724954445800897!3d40.52105560000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd422c722671aed3%3A0x5bba412f7341860b!2sClub%20de%20P%C3%A1del%20Suizo!5e0!3m2!1ses-419!2suy!4v1716094821173!5m2!1ses-419!2suy" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  <div style="display: flex; justify-content: center;">
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12131.716864602487!2d-3.6724954445800897!3d40.52105560000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd422c722671aed3%3A0x5bba412f7341860b!2sClub%20de%20P%C3%A1del%20Suizo!5e0!3m2!1ses-419!2suy!4v1716094821173!5m2!1ses-419!2suy" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  </div>
   """
   st.components.v1.html(google_maps_embed, width=640, height=350)
 
-  st.subheader("Horarios")
-  dia, hora = st.columns(2)
-  dia.text("Lunes a Viernes")
-  hora.text("14:00 - 22:00")
-  dia.text("Sabado")
-  hora.text("08:00 - 23:00")
-  dia.text("Domingo")
-  hora.text("16:00 - 23:00")
+  col_horarios, col_contacto = st.columns(2)
 
-  st.subheader("Contacto")
-  st.text("+55 11 97783-6489")
-  st.text("canchaspadel@mail.com")
+  with col_horarios:
+    st.subheader("Horarios")
+    sub_col1, sub_col2 = st.columns(2)
+    with sub_col1:
+        st.text("Lunes a Viernes:")
+        st.text("Sábado:")
+        st.text("Domingo:")
+    with sub_col2:
+        st.text("14:00 - 22:00")
+        st.text("08:00 - 23:00")
+        st.text("16:00 - 23:00")
+
+  with col_contacto:
+    st.subheader("Contacto")
+    st.text("📞 +55 11 97783-6489")
+    st.text("📧 canchaspadel@mail.com")
 
 if selected == "Canchas":
   st.subheader("Cancha 1")
   st.image("assets/img/canchacerrada00.jpg")
   st.text("Condiciones: Cerrada, Cristal.")
-  st.text("Costo: $1250 (Lunes a Jueves), $1500 (Viernes a Domingo)")
+  st.text("Costo: €12.50 (Lunes a Jueves), €15.00 (Viernes a Domingo)")
   st.write("##")
   
   st.subheader("Cancha 2")
   st.image("assets/img/canchaabierta01.jpg")
   st.text("Condiciones: Abierta, Cristal.")
-  st.text("Costo: $1000 (Lunes a Jueves), $1250 (Viernes a Domingo)")
+  st.text("Costo: €10.00 (Lunes a Jueves), €12.50 (Viernes a Domingo)")
   st.write("##")
   
   st.subheader("Cancha 3")
   st.image("assets/img/canchaabiertamuro01.jpg")
   st.text("Condiciones: Abierta, Muro.")
-  st.text("Costo: $800 (Lunes a Jueves), $1000 (Viernes a Domingo)")
-  st.write("##")
+  st.text("Costo: €8.00 (Lunes a Jueves), €10.00 (Viernes a Domingo)")
   
 
 if selected == "Reservar":
@@ -133,9 +145,11 @@ if selected == "Reservar":
       
       if submit_button:
           if st.session_state.nombre == "":
-              st.warning("El nombre es obligatorio")
+              st.warning("El nombre es un campo obligatorio. Por favor, ingrese su nombre.")
           elif st.session_state.email == "":
-              st.warning("El email es obligatorio")
+              st.warning("El email es un campo obligatorio. Por favor, ingrese su email.")
+          elif not is_valid_email(st.session_state.email):
+              st.warning("El email ingresado no es válido. Por favor, ingrese un email válido.")
           else:
               st.session_state.step = 2
               st.experimental_rerun()
@@ -187,13 +201,13 @@ if selected == "Reservar":
             # Mostrar información de la cancha
             if st.session_state.cancha == "Cancha 1":
                 st.write("Condiciones: Cerrada, Cristal.")
-                st.write("Costo: 1250 UYU (Lunes a Jueves), 1500 (Viernes a Domingo)")
+                st.write("Costo: €12.50 (Lunes a Jueves), €15.00 (Viernes a Domingo)")
             elif st.session_state.cancha == "Cancha 2":
                 st.write("Condiciones: Abierta, Cristal.")
-                st.write("Costo: 1000 (Lunes a Jueves), 1250 (Viernes a Domingo)")
+                st.write("Costo: €10.00 (Lunes a Jueves), €12.50 (Viernes a Domingo)")
             elif st.session_state.cancha == "Cancha 3":
                 st.write("Condiciones: Abierta, Muro.")
-                st.write("Costo: 800 UYU (Lunes a Jueves), 1000 UYU (Viernes a Domingo)")
+                st.write("Costo: €8.00 (Lunes a Jueves), €10.00 (Viernes a Domingo)")
           
           
           confirmar_button = st.button("Confirmar Reserva")
@@ -229,11 +243,25 @@ if selected == "Reservar":
   # Paso 4: Confirmacion de reserva
   if st.session_state.step == 4:
       st.success("Reserva confirmada exitosamente! Revisa tu casilla de mail.")
-      st.write(f"Nombre: {st.session_state.nombre}")
-      st.write(f"Email: {st.session_state.email}")
-      st.write(f"Fecha: {fecha_para_visualizacion(st.session_state.fecha)}")
-      st.write(f"Horario: {st.session_state.horario}")
-      st.write(f"Cancha: {st.session_state.cancha}")
+      st.write("#### Detalles de la reserva")
+
+      # Crear columnas para los atributos y los datos
+      col_attr, col_data = st.columns(2)
+    
+      # Mostrar los detalles en columnas
+      with col_attr:
+        st.write("**Nombre**")
+        st.write("**Email**")
+        st.write("**Inicio**") 
+        st.write("**Cancha**")
+      with col_data:
+        st.write(st.session_state.nombre)
+        st.write(st.session_state.email)
+        st.write(fecha_para_visualizacion(st.session_state.fecha).title() + f" - {st.session_state.horario}")
+        st.write(st.session_state.cancha)
+    
+      # Agregar una línea debajo del último dato
+      st.write("---")
       
       st.warning("IMPORTANTE: Recuerda que al confirmar la reserva, estás comprometiéndote a asistir. Se aceptaran cancelaciones exclusivamente con un día de anticipación vía comunicación al número +55 97783-6489. En caso de no asistir ni realizar cancelación no se aceptaran nuevas reservas para dichos datos de usuario (email y telefono).")
 
