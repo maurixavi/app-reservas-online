@@ -1,2 +1,5 @@
 # Streamlit Secrets
-secrets
+/.streamlit/secrets
+/bin/
+/lib/
+pyvenv.cfg

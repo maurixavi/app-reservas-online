@@ -8,6 +8,7 @@ def obtener_fecha_actual():
 def obtener_timestamp_actual():
   return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
+
 # Guardar reservas en el archivo Excel
 def guardar_reserva(nombre, email, fecha, hora, cancha):
     try:
