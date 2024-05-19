@@ -61,22 +61,23 @@ def obtener_condiciones_y_costo(cancha, fecha):
     condiciones = ""
     costo = ""
     dia_semana = fecha.strftime("%A").title()
+    dias_semana = ["Lunes", "Martes", "Miercoles", "Jueves"]
     
     if cancha == "Cancha 1":
         condiciones = "Cerrada, Cristal"
-        if dia_semana in ["Lunes", "Martes", "Miercoles", "Jueves"]:
+        if dia_semana in dias_semana:
             costo = "€12.50"
         else:
             costo = "€15.00"
     elif cancha == "Cancha 2":
         condiciones = "Abierta, Cristal"
-        if dia_semana in ["Monday", "Tuesday", "Wednesday", "Thursday"]:
+        if dia_semana in dias_semana:
             costo = "€10.00"
         else:
             costo = "€12.50"
     elif cancha == "Cancha 3":
         condiciones = "Abierta, Muro"
-        if dia_semana in ["Monday", "Tuesday", "Wednesday", "Thursday"]:
+        if dia_semana in dias_semana:
             costo = "€8.00"
         else:
             costo = "€10.00"
@@ -270,13 +271,15 @@ if selected == "Reservar":
         st.write("**Email**")
         st.write("**Inicio**") 
         st.write("**Cancha**")
+        st.write("**Costo**")
       with col_data:
         st.write(st.session_state.nombre)
         st.write(st.session_state.email)
         st.write(fecha_para_visualizacion(st.session_state.fecha) + f" - {st.session_state.horario}")
         cancha_seleccionada = st.session_state.cancha
-        condiciones, _ = obtener_condiciones_y_costo(cancha_seleccionada, st.session_state.fecha)
+        condiciones, costo = obtener_condiciones_y_costo(cancha_seleccionada, st.session_state.fecha)
         st.write(f"{cancha_seleccionada} ({condiciones})")
+        st.write(costo)
     
       st.write("---")
       
