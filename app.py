@@ -52,6 +52,12 @@ def get_canchas_disponibles(fecha_str, horario):
     canchas_disponibles = [cancha for cancha in canchas if cancha not in canchas_ocupadas]
     return canchas_disponibles
 
+canchas_imagenes = {
+    "Cancha 1": "assets/img/canchacerrada00.jpg",
+    "Cancha 2": "assets/img/canchaabierta01.jpg",
+    "Cancha 3": "assets/img/canchaabiertamuro01.jpg"
+}
+
 selected = option_menu(
   menu_title=None, 
   options=["Reservar", "Canchas", "Detalles"], 
@@ -173,6 +179,23 @@ if selected == "Reservar":
       canchas_disponibles = get_canchas_disponibles(fecha_to_string(st.session_state.fecha), st.session_state.horario)
       if canchas_disponibles:
           st.session_state.cancha = st.selectbox("Seleccione una cancha disponible.", canchas_disponibles, index=canchas_disponibles.index(st.session_state.cancha) if st.session_state.cancha in canchas_disponibles else 0)
+          
+          # Mostrar la imagen de la cancha seleccionada
+          if st.session_state.cancha in canchas_imagenes:
+            st.image(canchas_imagenes[st.session_state.cancha])
+
+            # Mostrar información de la cancha
+            if st.session_state.cancha == "Cancha 1":
+                st.write("Condiciones: Cerrada, Cristal.")
+                st.write("Costo: 1250 UYU (Lunes a Jueves), 1500 (Viernes a Domingo)")
+            elif st.session_state.cancha == "Cancha 2":
+                st.write("Condiciones: Abierta, Cristal.")
+                st.write("Costo: 1000 (Lunes a Jueves), 1250 (Viernes a Domingo)")
+            elif st.session_state.cancha == "Cancha 3":
+                st.write("Condiciones: Abierta, Muro.")
+                st.write("Costo: 800 UYU (Lunes a Jueves), 1000 UYU (Viernes a Domingo)")
+          
+          
           confirmar_button = st.button("Confirmar Reserva")
           volver_button = st.button("Volver")
           if confirmar_button:
@@ -205,12 +228,14 @@ if selected == "Reservar":
 
   # Paso 4: Confirmacion de reserva
   if st.session_state.step == 4:
-      st.success("Reserva confirmada exitosamente!")
+      st.success("Reserva confirmada exitosamente! Revisa tu casilla de mail.")
       st.write(f"Nombre: {st.session_state.nombre}")
       st.write(f"Email: {st.session_state.email}")
       st.write(f"Fecha: {fecha_para_visualizacion(st.session_state.fecha)}")
       st.write(f"Horario: {st.session_state.horario}")
       st.write(f"Cancha: {st.session_state.cancha}")
+      
+      st.warning("IMPORTANTE: Recuerda que al confirmar la reserva, estás comprometiéndote a asistir. Se aceptaran cancelaciones exclusivamente con un día de anticipación vía comunicación al número +55 97783-6489. En caso de no asistir ni realizar cancelación no se aceptaran nuevas reservas para dichos datos de usuario (email y telefono).")
 
       nueva_reserva_button = st.button("Hacer otra reserva")
       if nueva_reserva_button:
