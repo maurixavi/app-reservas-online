@@ -1,10 +1,9 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 from send_email import send
-from reservas import guardar_reserva
 import datetime
 import locale
-import pymongo
+from pymongo import MongoClient
 import re
 import random
 
