@@ -2,4 +2,3 @@ streamlit
 streamlit-option-menu
 secure-smtplib
 pymongo
-locale
