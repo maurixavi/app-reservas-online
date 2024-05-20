@@ -129,7 +129,7 @@ canchas_imagenes = {
 
 selected = option_menu(
   menu_title=None, 
-  options=["Reservar", "Canchas", "Detalles"], 
+  options=["Reservar", "Cancelar", "Canchas", "Detalles"], 
   icons=["calendar-date", "building", "bi-info-square"], 
   orientation="horizontal")
 
@@ -179,7 +179,42 @@ if selected == "Canchas":
   st.text("Condiciones: Abierta, Muro.")
   st.text("Costo: €8.00 (Lunes a Jueves), €10.00 (Viernes a Domingo)")
   
+if selected == "Cancelar":
+    st.subheader("Cancelar reserva")
+    
+    with st.form(key='form_cancelar_reserva'):
+        codigo_reserva = st.text_input("Codigo de Reserva")
+        cancelar_button = st.form_submit_button(label='Cancelar Reserva')
 
+    if cancelar_button:
+        reserva = reservas_collection.find_one({"codigo": codigo_reserva})
+        reservas_collection.delete_one({"codigo": codigo_reserva})
+        
+        if reserva:
+            send(
+                  "Cancelacion de reserva",
+                   reserva['codigo'],
+                   reserva['email'],
+                   reserva['nombre'],
+                   reserva['apellido'],
+                   reserva['fecha'],
+                   reserva['horario'],
+                   reserva['cancha'],
+                   "",
+                   reserva['costo'])
+            st.success("Su reserva ha sido correctamente cancelada.")
+            st.write("##### Detalles de la reserva")
+            st.write(f"Nombre: {reserva['nombre']} {reserva['apellido']}")
+            st.write(f"Email: {reserva['email']}")
+            st.write(f"Fecha: {reserva['fecha']}")
+            st.write(f"Hora: {reserva['horario']}")
+            st.write(f"Cancha: {reserva['cancha']}")
+            st.write(f"Costo: {reserva['costo']}")
+            st.write(f"Realizada: {reserva['timestamp']}")    
+        else:
+            st.error("Código de reserva no encontrado.")
+                    
+                    
 if selected == "Reservar":
   # Inicializacion variables de estado en st.session_state
   if 'step' not in st.session_state:
@@ -306,13 +341,14 @@ if selected == "Reservar":
               reservas_collection.insert_one(nueva_reserva)
               condiciones, costo = obtener_condiciones_y_costo(st.session_state.cancha, st.session_state.fecha)
               send(
-                  st.session_state.codigo_reserva,
+                  "Reserva de cancha",
+                   st.session_state.codigo_reserva,
                    st.session_state.email, 
-                  st.session_state.nombre, 
-                  st.session_state.apellido, 
+                   st.session_state.nombre, 
+                   st.session_state.apellido, 
                    fecha_to_string(st.session_state.fecha), 
                    st.session_state.horario, 
-                  st.session_state.cancha, condiciones, costo)
+                   st.session_state.cancha, condiciones, costo)
               st.session_state.reserva_confirmada = True
               st.session_state.step = 4  
               st.experimental_rerun()
