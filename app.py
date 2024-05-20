@@ -3,7 +3,7 @@ from streamlit_option_menu import option_menu
 from send_email import send
 import datetime
 import locale
-from pymongo import MongoClient
+import pymongo
 import re
 import random
 
@@ -11,6 +11,19 @@ st.set_page_config(
   page_title="Padel Club - Reserva tu cancha online", 
   page_icon="🗓️",
   layout="centered")
+
+st.markdown(
+    """
+    <style>
+    .css-1jc7ptx, .e1ewe7hr3, .viewerBadge_container__1QSob,
+    .styles_viewerBadge__1yB5_, .viewerBadge_link__1S137,
+    .viewerBadge_text__1JaDK {
+        display: none;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 st.image("assets/img/PadelCourts0.jpg")
 st.title("Padel Club")
