@@ -6,6 +6,7 @@ import datetime
 import locale
 import pymongo
 import re
+import random
 
 st.set_page_config(
   page_title="Padel Club - Reserva tu cancha online", 
@@ -32,22 +33,19 @@ client = init_connection()
 db = client.padelclub
 reservas_collection = db.reservas
 
+def generate_unique_reservation_code():
+    while True:
+        code = '{:08d}'.format(random.randint(0, 99999999))
+        if not reservas_collection.find_one({"codigo_reserva": code}):
+            return code
+
+
 def is_valid_email(email):
     regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
     return re.match(regex, email) is not None
 
 def fecha_para_visualizacion(fecha):
     return fecha.strftime("%A, %B %d").title()
-
-def get_horarios_disponibles(fecha):
-    horarios = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00"]
-    fecha_str = fecha_to_string(fecha)
-    horarios_disponibles = []
-    for horario in horarios:
-        canchas_disponibles = get_canchas_disponibles(fecha_str, horario)
-        if canchas_disponibles:
-            horarios_disponibles.append(horario)
-    return horarios_disponibles
 
 def get_horarios_disponibles(fecha):
     horarios = [
@@ -84,58 +82,6 @@ def get_horarios_disponibles(fecha):
             if canchas_disponibles:
                 horarios_disponibles.append(horario)
     return horarios_disponibles
-
-def get_horarios_disponibles_(fecha):
-    horarios = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00"]
-    fecha_str = fecha_to_string(fecha)
-    horarios_disponibles = []
-    for horario in horarios:
-        canchas_disponibles = get_canchas_disponibles(fecha_str, horario)
-        if canchas_disponibles:
-            horarios_disponibles.append(horario)
-    return horarios_disponibles
-
-def get_horarios_disponibles2(fecha):
-    dia_semana = fecha.strftime("%A")
-    
-    horarios_dia_semana = [
-        "08:30", "10:00", "11:30", "13:00",
-        "14:30", "16:00", "17:30", "19:00",
-        "20:30", "22:00"
-    ]
-    horarios_sabado = [
-        "08:30", "10:00", "11:30", "13:00",
-        "14:30", "16:00", "17:30", "19:00",
-        "20:30", "22:00"
-    ]
-    horarios_domingo = [
-        "14:30", "16:00", "17:30", "19:00",
-        "20:30", "22:00"
-    ]
-    
-    horarios_por_dia = {
-        "lunes": horarios_dia_semana,
-        "martes": horarios_dia_semana,
-        "miercoles": horarios_dia_semana,
-        "jueves": horarios_dia_semana,
-        "viernes": horarios_dia_semana,
-        "sabado": horarios_sabado,
-        "domingo": horarios_domingo
-    }
-
-    # Obtén los horarios disponibles para el día correspondiente
-    horarios_disponibles = horarios_por_dia.get(dia_semana, [])
-
-    fecha_str = fecha_to_string(fecha)
-    horarios_disponibles2 = []
-    for horario in horarios_disponibles:
-        canchas_disponibles = get_canchas_disponibles(fecha_str, horario)
-        if canchas_disponibles:
-            horarios_disponibles2.append(horario)
-
-    return horarios_disponibles2
-
-
 
 # Canchas disponibles basadas en la fecha y el horario seleccionado
 def get_canchas_disponibles(fecha_str, horario):
@@ -245,7 +191,10 @@ if selected == "Reservar":
       st.session_state.horario = ''
   if 'cancha' not in st.session_state:
       st.session_state.cancha = ''
-
+  if 'codigo_reserva' not in st.session_state:
+      st.session_state.codigo_reserva = ''
+  if 'reserva_confirmada' not in st.session_state:
+      st.session_state.reserva_confirmada = False
 
   st.subheader("Reservar")
 
@@ -322,7 +271,10 @@ if selected == "Reservar":
           confirmar_button = st.button("Confirmar Reserva")
           volver_button = st.button("Volver")
           if confirmar_button:
+              codigo_reserva = generate_unique_reservation_code()
+              st.session_state.codigo_reserva = codigo_reserva   
               nueva_reserva = {
+                  "codigo": codigo_reserva,
                   "nombre": st.session_state.nombre,
                   "email": st.session_state.email,
                   "fecha": fecha_to_string(st.session_state.fecha),
@@ -358,12 +310,15 @@ if selected == "Reservar":
       col_attr, col_data = st.columns(2)
     
       with col_attr:
+        st.write("**Codigo de Reserva**")
         st.write("**Nombre**")
         st.write("**Email**")
         st.write("**Inicio**") 
         st.write("**Cancha**")
         st.write("**Costo**")
       with col_data:
+        codigo_reserva = st.session_state.codigo_reserva
+        st.write(codigo_reserva)
         st.write(st.session_state.nombre)
         st.write(st.session_state.email)
         st.write(fecha_para_visualizacion(st.session_state.fecha) + f". Hora: {st.session_state.horario}")
@@ -371,10 +326,10 @@ if selected == "Reservar":
         condiciones, costo = obtener_condiciones_y_costo(cancha_seleccionada, st.session_state.fecha)
         st.write(f"{cancha_seleccionada} ({condiciones})")
         st.write(costo)
-    
+        
       st.write("---")
       
-      st.warning("IMPORTANTE: Recuerda que al confirmar la reserva, estás comprometiéndote a asistir. Se aceptaran cancelaciones exclusivamente con un día de anticipación vía comunicación al número +55 97783-6489. En caso de no asistir ni realizar cancelación no se aceptaran nuevas reservas para dichos datos de usuario (email y telefono).")
+      st.warning("Politica de cancelación: Recuerda que al confirmar la reserva, estás comprometiéndote a asistir. Se permite la realización de cancelaciones exclusivamente con 24 horas de anticipación.")
 
       nueva_reserva_button = st.button("Hacer otra reserva")
       if nueva_reserva_button:
