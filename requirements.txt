@@ -1,5 +1,4 @@
 streamlit
 streamlit-option-menu
-smtplib
 secure-smtplib
 pymongo

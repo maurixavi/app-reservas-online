@@ -5,8 +5,10 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
 
-
-def send(email, nombre, fecha, hora, cancha):
+def fecha_para_visualizacion(fecha):
+    return fecha.strftime("%A, %B %d").title()
+  
+def send(tipo, codigo, email, nombre, apellido, fecha, hora, cancha, condiciones, costo):
 	user = st.secrets["smtp_user"]
 	password = st.secrets["smtp_password"]
  
@@ -19,28 +21,55 @@ def send(email, nombre, fecha, hora, cancha):
  
 	msg['From'] = sender_email
 	msg['To'] = email
-	msg['Subject'] = "Reserva de cancha"
+	msg['Subject'] = tipo
 	
-	# Cargar la imagen y adjuntarla al mensaje
 	with open('assets/img/PadelClubBanner.jpg', 'rb') as f:
 		image = MIMEImage(f.read())
 		image.add_header('Content-ID', '<logo>')
 		msg.attach(image)
 
-	message = f"""
-	<html>
-	<body>
-		<p>Hola {nombre},</p>
-		<p>Su reserva ha sido realizada con éxito.</p>
-		<p>Fecha: {fecha}</p>
-		<p>Hora: {hora}</p>
-		<p>Cancha: {cancha}</p>
-		<p>Gracias por elegirnos.</p>
-		<p>Padel Club.</p>
-		<img src="cid:logo" style="display: block; margin: 0 auto;">
-	</body>
-	</html>
-	"""
+	message = ""
+	if tipo == "Reserva de cancha":
+		message = f"""
+		<html>
+		<body>
+			<p>Hola {nombre} {apellido},</p>
+			<p>Su reserva ha sido realizada con éxito.</p>
+   		<p>Detalles de la reserva:</p>
+			<p>Codigo de Reserva: {codigo}</p>
+			<p>Fecha: {fecha}</p>
+			<p>Hora: {hora}</p>
+			<p>Duracion: 90 minutos</p>
+			<p>Cancha: {cancha} ({condiciones})</p>
+			<p>Costo: {costo}</p>
+			<p>Gracias por elegirnos.</p>
+			<p>Padel Club.</p>
+			<img src="cid:logo" style="display: block; margin: 0 auto;">
+			<p>Politica de cancelación: Recuerda que al confirmar la reserva, estás comprometiéndote a asistir. Se permite la realización de cancelaciones exclusivamente con 24 horas de anticipación.</p>
+		</body>
+		</html>
+		"""
+	if tipo == "Cancelacion de reserva":
+		message = f"""
+		<html>
+		<body>
+			<p>Hola {nombre} {apellido},</p>
+			<p>Su reserva con el codigo {codigo} ha sido cancelada con éxito.</p>
+			<p>Detalles de la reserva cancelada:</p>
+			<p>Codigo de Reserva: {codigo}</p>
+			<p>Fecha: {fecha}</p>
+			<p>Hora: {hora}</p>
+			<p>Duracion: 90 minutos</p>
+			<p>Cancha: {cancha}</p>
+			<p>Costo: {costo}</p>
+			<p>Gracias por elegirnos.</p>
+			<p>Padel Club.</p>
+			<img src="cid:logo" style="display: block; margin: 0 auto;">
+			<p>Politica de cancelación: Recuerda que al confirmar la reserva, estás comprometiéndote a asistir. Se permite la realización de cancelaciones exclusivamente con 24 horas de anticipación.</p>
+		</body>
+		</html>
+		"""
+
 	msg.attach(MIMEText(message, 'html'))
 	#msg.attach(MIMEText(message, 'plain'))
  
