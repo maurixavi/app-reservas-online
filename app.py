@@ -183,6 +183,10 @@ if selected == "Reservar":
       st.session_state.step = 1
   if 'nombre' not in st.session_state:
       st.session_state.nombre = ''
+  if 'apellido' not in st.session_state:
+      st.session_state.apellido = ''
+  if 'telefono' not in st.session_state:
+      st.session_state.telefono = ''
   if 'email' not in st.session_state:
       st.session_state.email = ''
   if 'fecha' not in st.session_state:
@@ -201,10 +205,15 @@ if selected == "Reservar":
   # Paso 1: Formulario para nombre, email y fecha
   if st.session_state.step == 1:
       with st.form(key='form1'):
-          st.session_state.nombre = st.text_input("Nombre")
+          col1, col2 = st.columns(2)
+          with col1:
+              st.session_state.nombre = st.text_input("Nombre")
+          with col2:
+              st.session_state.apellido = st.text_input("Apellido")
           st.session_state.email = st.text_input("Email")
+          st.session_state.telefono = st.text_input("Telefono")
           st.session_state.fecha = st.date_input("Fecha", min_value=datetime.date.today(), max_value=datetime.date.today() + datetime.timedelta(days=9))
-          st.text("*Se permiten realizar reservas solamente dentro de un plazo de 10 días.")
+          st.text("*Se permiten reservas solamente dentro de un plazo de 10 días.")
           submit_button = st.form_submit_button(label='Siguiente')
       
       if submit_button:
@@ -220,8 +229,9 @@ if selected == "Reservar":
 
   # Paso 2: Selección de horario
   if st.session_state.step == 2:
-      st.write(f"Nombre: {st.session_state.nombre}")
+      st.write(f"Nombre: {st.session_state.nombre} {st.session_state.apellido}")
       st.write(f"Email: {st.session_state.email}")
+      st.write(f"Telefono: {st.session_state.telefono}")
       st.write(f"Fecha seleccionada: {fecha_para_visualizacion(st.session_state.fecha)}")
       current_time = datetime.datetime.now().strftime("%H:%M:%S")
       st.text(f"Tiempo actual: {current_time}")
@@ -251,8 +261,9 @@ if selected == "Reservar":
 
   # Paso 3: Selección de cancha
   if st.session_state.step == 3:
-      st.write(f"Nombre: {st.session_state.nombre}")
+      st.write(f"Nombre: {st.session_state.nombre} {st.session_state.apellido}")
       st.write(f"Email: {st.session_state.email}")
+      st.write(f"Telefono: {st.session_state.telefono}")
       st.write(f"Fecha seleccionada: {fecha_para_visualizacion(st.session_state.fecha)}")
       st.write(f"Horario seleccionado: {st.session_state.horario}")
 
@@ -276,16 +287,22 @@ if selected == "Reservar":
               nueva_reserva = {
                   "codigo": codigo_reserva,
                   "nombre": st.session_state.nombre,
+                  "apellido": st.session_state.apellido,
                   "email": st.session_state.email,
+                  "telefono": st.session_state.telefono,
                   "fecha": fecha_to_string(st.session_state.fecha),
                   "horario": st.session_state.horario,
-                  "cancha": st.session_state.cancha
+                  "cancha": st.session_state.cancha,
+                  "costo": costo,
+                  "timestamp": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
               }
               reservas_collection.insert_one(nueva_reserva)
               condiciones, costo = obtener_condiciones_y_costo(st.session_state.cancha, st.session_state.fecha)
               send(
+                  st.session_state.codigo_reserva,
                    st.session_state.email, 
                   st.session_state.nombre, 
+                  st.session_state.apellido, 
                    fecha_to_string(st.session_state.fecha), 
                    st.session_state.horario, 
                   st.session_state.cancha, condiciones, costo)
@@ -305,25 +322,31 @@ if selected == "Reservar":
   # Paso 4: Confirmacion de reserva
   if st.session_state.step == 4:
       st.success("Reserva confirmada exitosamente! Revisa tu casilla de mail.")
-      st.write("#### Detalles de la reserva")
+      
+      st.write("##### Detalles de la reserva")
 
+      
       col_attr, col_data = st.columns(2)
     
       with col_attr:
         st.write("**Codigo de Reserva**")
         st.write("**Nombre**")
         st.write("**Email**")
+        st.write("**Telefono**")
         st.write("**Inicio**") 
+        st.write("**Duración**")
         st.write("**Cancha**")
         st.write("**Costo**")
       with col_data:
         codigo_reserva = st.session_state.codigo_reserva
         st.write(codigo_reserva)
-        st.write(st.session_state.nombre)
+        st.write(f"{st.session_state.nombre} {st.session_state.apellido}")
         st.write(st.session_state.email)
+        st.write(st.session_state.telefono)
         st.write(fecha_para_visualizacion(st.session_state.fecha) + f". Hora: {st.session_state.horario}")
         cancha_seleccionada = st.session_state.cancha
         condiciones, costo = obtener_condiciones_y_costo(cancha_seleccionada, st.session_state.fecha)
+        st.write("90 minutos")
         st.write(f"{cancha_seleccionada} ({condiciones})")
         st.write(costo)
         
