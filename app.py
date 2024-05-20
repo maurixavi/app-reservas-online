@@ -44,6 +44,9 @@ def is_valid_email(email):
     regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
     return re.match(regex, email) is not None
 
+def is_valid_telefono(telefono):
+    return telefono.isdigit() and len(telefono) in range(7, 13)
+
 def fecha_para_visualizacion(fecha):
     return fecha.strftime("%A, %B %d").title()
 
@@ -207,12 +210,12 @@ if selected == "Reservar":
       with st.form(key='form1'):
           col1, col2 = st.columns(2)
           with col1:
-              st.session_state.nombre = st.text_input("Nombre")
+              st.session_state.nombre = st.text_input("Nombre", value=st.session_state.nombre)
           with col2:
-              st.session_state.apellido = st.text_input("Apellido")
-          st.session_state.email = st.text_input("Email")
-          st.session_state.telefono = st.text_input("Telefono")
-          st.session_state.fecha = st.date_input("Fecha", min_value=datetime.date.today(), max_value=datetime.date.today() + datetime.timedelta(days=9))
+              st.session_state.apellido = st.text_input("Apellido",value=st.session_state.apellido)
+          st.session_state.email = st.text_input("Email", value=st.session_state.email)
+          st.session_state.telefono = st.text_input("Telefono", value=st.session_state.telefono)
+          st.session_state.fecha = st.date_input("Fecha", min_value=datetime.date.today(), max_value=datetime.date.today() + datetime.timedelta(days=9), value=st.session_state.fecha)
           st.text("*Se permiten reservas solamente dentro de un plazo de 10 días.")
           submit_button = st.form_submit_button(label='Siguiente')
       
@@ -223,6 +226,10 @@ if selected == "Reservar":
               st.warning("El email es un campo obligatorio. Por favor, ingrese su email.")
           elif not is_valid_email(st.session_state.email):
               st.warning("El email ingresado no es válido. Por favor, ingrese un email válido.")
+          elif st.session_state.telefono == "":
+              st.warning("El telefono es un campo obligatorio. Por favor, ingrese su telefono.")
+          elif not is_valid_telefono(st.session_state.telefono):
+              st.warning("El telefono ingresado contiene caracteres no válidos o largo no aceptado. Por favor, ingrese un telefono válido.")
           else:
               st.session_state.step = 2
               st.experimental_rerun()
