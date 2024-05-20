@@ -130,7 +130,7 @@ canchas_imagenes = {
 selected = option_menu(
   menu_title=None, 
   options=["Reservar", "Cancelar", "Canchas", "Detalles"], 
-  icons=["calendar-date", "building", "bi-info-square"], 
+  icons=["calendar-date", "calendar-x", "building", "bi-info-square"], 
   orientation="horizontal")
 
 # ---- MENU ----
@@ -162,19 +162,21 @@ if selected == "Detalles":
     st.text("📧 canchaspadel@mail.com")
 
 if selected == "Canchas":
-  st.subheader("Cancha 1")
+  st.subheader("Canchas")
+  
+  st.write("##### Cancha 1")
   st.image("assets/img/canchacerrada00.jpg")
   st.text("Condiciones: Cerrada, Cristal.")
   st.text("Costo: €12.50 (Lunes a Jueves), €15.00 (Viernes a Domingo)")
-  st.write("##")
+  st.write("---")
   
-  st.subheader("Cancha 2")
+  st.write("##### Cancha 2")
   st.image("assets/img/canchaabierta01.jpg")
   st.text("Condiciones: Abierta, Cristal.")
   st.text("Costo: €10.00 (Lunes a Jueves), €12.50 (Viernes a Domingo)")
-  st.write("##")
+  st.write("---")
   
-  st.subheader("Cancha 3")
+  st.write("##### Cancha 3")
   st.image("assets/img/canchaabiertamuro01.jpg")
   st.text("Condiciones: Abierta, Muro.")
   st.text("Costo: €8.00 (Lunes a Jueves), €10.00 (Viernes a Domingo)")
