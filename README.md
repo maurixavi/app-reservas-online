@@ -1,4 +1,4 @@
-# Padel Club - Online Court Reservation System
+# Padel Club - Online Court Reservation App
 
 ![Reservation Page](assets/img/View01.png)
 
@@ -41,19 +41,19 @@ The application uses Streamlit to create an intuitive web interface. The main fe
 
 ### Screenshots
 
-**Reservation and Confirmation Page:**
+**Reservation:**
 
 ![Reservation Page](assets/img/View02.png)
 
 ![Reservation Page](assets/img/ViewConfirmation.png)
 
-**Cancellation Page:**
+**Cancellation:**
 
-![Cancellation Page](assets/img/cancellation_page.png)
+![Cancellation Page](assets/img/CancelView.png)
 
-**Court Details Page:**
+**Club Details Page:**
 
-![Court Details Page](assets/img/court_details_page.png)
+![Court Details Page](assets/img/DetailsView.png)
 
 ## How It Works
 
