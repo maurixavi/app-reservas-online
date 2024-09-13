@@ -281,7 +281,7 @@ if selected == "Reservar":
               st.warning("El telefono ingresado contiene caracteres no válidos o largo no aceptado. Por favor, ingrese un telefono válido.")
           else:
               st.session_state.step = 2
-              st.experimental_rerun()
+              st.rerun()
 
   # Paso 2: Selección de horario
   if st.session_state.step == 2:
@@ -299,10 +299,10 @@ if selected == "Reservar":
           volver_button = st.button("Volver")
           if siguiente_button:
               st.session_state.step = 3
-              st.experimental_rerun()
+              st.rerun()
           if volver_button:
               st.session_state.step = 1
-              st.experimental_rerun()
+              st.rerun()
           
       else:
           st.warning("No hay horarios disponibles para la fecha seleccionada.")
@@ -310,10 +310,10 @@ if selected == "Reservar":
           volver_button = st.button("Volver a inicio")
           if siguiente_button:
               st.session_state.step = 1
-              st.experimental_rerun()
+              st.rerun()
           if volver_button:
               st.session_state.step = 1
-              st.experimental_rerun()
+              st.rerun()
 
   # Paso 3: Selección de cancha
   if st.session_state.step == 3:
@@ -365,16 +365,16 @@ if selected == "Reservar":
                    st.session_state.cancha, condiciones, costo)
               st.session_state.reserva_confirmada = True
               st.session_state.step = 4  
-              st.experimental_rerun()
+              st.rerun()
           if volver_button:
               st.session_state.step = 2
-              st.experimental_rerun()
+              st.rerun()
       else:
           st.warning("No hay canchas disponibles para el horario seleccionado.")
           volver_button = st.button("Volver a seleccionar horario")
           if volver_button:
               st.session_state.step = 2
-              st.experimental_rerun()
+              st.rerun()
 
   # Paso 4: Confirmacion de reserva
   if st.session_state.step == 4:
@@ -420,4 +420,4 @@ if selected == "Reservar":
           st.session_state.horario = ''
           st.session_state.cancha = ''
           st.session_state.reserva_confirmada = False
-          st.experimental_rerun()
+          st.rerun()
