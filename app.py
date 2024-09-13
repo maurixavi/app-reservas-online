@@ -289,8 +289,8 @@ if selected == "Reservar":
       st.write(f"Email: {st.session_state.email}")
       st.write(f"Telefono: {st.session_state.telefono}")
       st.write(f"Fecha seleccionada: {fecha_para_visualizacion(st.session_state.fecha)}")
-      current_time = datetime.datetime.now().strftime("%H:%M:%S")
-      st.text(f"Tiempo actual: {current_time}")
+      # current_time = datetime.datetime.now().strftime("%H:%M:%S")
+      # st.text(f"Tiempo actual: {current_time}")
 
       horarios_disponibles = get_horarios_disponibles(st.session_state.fecha)
       if horarios_disponibles:
@@ -333,8 +333,7 @@ if selected == "Reservar":
             condiciones, costo = obtener_condiciones_y_costo(st.session_state.cancha, st.session_state.fecha)
             st.write(f"Condiciones: {condiciones}")
             st.write(f"Costo: {costo}")
-          
-          
+                    
           confirmar_button = st.button("Confirmar Reserva")
           volver_button = st.button("Volver")
           if confirmar_button:
